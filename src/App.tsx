@@ -16,6 +16,8 @@ import { useQuarters } from './hooks/useQuarters';
 import { Quarter } from './types';
 
 function App() {
+  console.log('App component rendering...');
+  
   const { user, teacher, loading: authLoading } = useAuth();
   const { activeQuarter } = useQuarters();
   const [selectedQuarter, setSelectedQuarter] = useState<Quarter | null>(null);
@@ -53,15 +55,20 @@ function App() {
 
   // Show loading screen while checking authentication
   if (authLoading) {
+    console.log('Showing auth loading screen...');
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading DIID GS...</p>
+        </div>
       </div>
     );
   }
 
   // Show auth form if not authenticated
   if (!user || !teacher) {
+    console.log('Showing auth form...');
     return <AuthForm />;
   }
 
@@ -70,6 +77,7 @@ function App() {
   const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
   
   if (!supabaseUrl || !supabaseKey) {
+    console.log('Showing database setup...');
     return <DatabaseSetup />;
   }
 
