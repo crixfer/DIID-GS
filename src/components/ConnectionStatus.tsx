@@ -5,10 +5,21 @@ import { supabase } from '../lib/supabase';
 export function ConnectionStatus() {
   const [status, setStatus] = useState<'checking' | 'connected' | 'error'>('checking');
   const [error, setError] = useState<string | null>(null);
+  const [isVisible, setIsVisible] = useState(true);
 
   useEffect(() => {
     checkConnection();
   }, []);
+
+  useEffect(() => {
+    if (status === 'connected') {
+      const timer = setTimeout(() => {
+        setIsVisible(false);
+      }, 2000);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [status]);
 
   const checkConnection = async () => {
     try {
@@ -26,6 +37,11 @@ export function ConnectionStatus() {
       setError(err instanceof Error ? err.message : 'Connection failed');
     }
   };
+
+  // Don't render if not visible
+  if (!isVisible && status === 'connected') {
+    return null;
+  }
 
   return (
     <div className="fixed top-4 right-4 z-50">
