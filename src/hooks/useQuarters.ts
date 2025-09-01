@@ -24,15 +24,19 @@ export function useQuarters() {
     if (!teacher) return;
     
     try {
-      setLoading(true);
+      console.log('Fetching quarters for teacher:', teacher.id);
       const { data, error } = await supabase
         .from('quarters')
         .select('*')
         .eq('teacher_id', teacher.id)
         .order('created_at', { ascending: false });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Quarters fetch error:', error);
+        throw error;
+      }
 
+      console.log('Quarters loaded:', data?.length || 0);
       const formattedQuarters: Quarter[] = data.map(q => ({
         id: q.id,
         name: q.name,
@@ -46,10 +50,13 @@ export function useQuarters() {
       
       // Set active quarter
       const active = formattedQuarters.find(q => q.status === 'active');
+      console.log('Active quarter:', active?.name || 'none');
       setActiveQuarter(active || null);
     } catch (err) {
+      console.error('Error in fetchQuarters:', err);
       setError(err instanceof Error ? err.message : 'Failed to fetch quarters');
     } finally {
+      console.log('Quarters fetch completed');
       setLoading(false);
     }
   };

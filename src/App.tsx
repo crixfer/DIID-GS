@@ -16,7 +16,7 @@ import { useQuarters } from './hooks/useQuarters';
 import { Quarter } from './types';
 
 function App() {
-  console.log('App component rendering...');
+  console.log('App component rendering...', { user: !!user, teacher: !!teacher, authLoading });
   
   const { user, teacher, loading: authLoading } = useAuth();
   const { activeQuarter } = useQuarters();
@@ -46,6 +46,7 @@ function App() {
   // Set initial quarter when active quarter is loaded
   React.useEffect(() => {
     if (activeQuarter && !selectedQuarter) {
+      console.log('Setting initial quarter:', activeQuarter.name);
       setSelectedQuarter(activeQuarter);
       if (activeTab === 'quarters') {
         setActiveTab('dashboard');
@@ -55,7 +56,7 @@ function App() {
 
   // Show loading screen while checking authentication
   if (authLoading) {
-    console.log('Showing auth loading screen...');
+    console.log('Auth loading - showing loading screen');
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
@@ -68,7 +69,7 @@ function App() {
 
   // Show auth form if not authenticated
   if (!user || !teacher) {
-    console.log('Showing auth form...');
+    console.log('Not authenticated - showing auth form', { user: !!user, teacher: !!teacher });
     return <AuthForm />;
   }
 
@@ -77,9 +78,11 @@ function App() {
   const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
   
   if (!supabaseUrl || !supabaseKey) {
-    console.log('Showing database setup...');
+    console.log('Missing Supabase config - showing setup');
     return <DatabaseSetup />;
   }
+
+  console.log('App fully loaded - rendering main interface');
 
   const handleQuarterSelect = (quarter: Quarter | null) => {
     setSelectedQuarter(quarter);
