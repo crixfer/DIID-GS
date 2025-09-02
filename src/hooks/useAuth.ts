@@ -49,20 +49,17 @@ export function useAuth() {
 
   const fetchTeacherProfile = async (authUserId: string) => {
     try {
-      console.log('Fetching teacher profile for:', authUserId);
       const { data, error } = await supabase
         .from('teachers')
         .select('*')
         .eq('auth_user_id', authUserId)
-        .maybeSingle();
+        .single();
 
-      if (error) {
-        console.error('Teacher profile fetch error:', error);
+      if (error && error.code !== 'PGRST116') {
         throw error;
       }
 
       if (data) {
-        console.log('Teacher profile loaded:', data.first_name, data.last_name);
         setTeacher({
           id: data.id,
           authUserId: data.auth_user_id,
@@ -71,13 +68,10 @@ export function useAuth() {
           lastName: data.last_name,
           createdAt: data.created_at
         });
-      } else {
-        console.log('No teacher profile found for user:', authUserId);
       }
     } catch (error) {
       console.error('Error fetching teacher profile:', error);
     } finally {
-      console.log('Teacher profile fetch completed');
       setLoading(false);
     }
   };

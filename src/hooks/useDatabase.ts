@@ -13,10 +13,8 @@ export function useDatabase(quarterId: string | null) {
 
   useEffect(() => {
     if (quarterId) {
-      console.log('Database hook: Loading data for quarter:', quarterId);
       fetchAllData();
     } else {
-      console.log('Database hook: No quarter selected, clearing data');
       setStudents([]);
       setQuarterStudents([]);
       setGrades([]);
@@ -30,32 +28,16 @@ export function useDatabase(quarterId: string | null) {
     if (!quarterId) return;
     
     try {
-      console.log('Fetching all data for quarter:', quarterId);
       setLoading(true);
-      
-      // Fetch data in parallel for better performance
-      const [studentsResult, gradesResult, attendanceResult, notesResult] = await Promise.allSettled([
+      await Promise.all([
         fetchStudents(),
         fetchGrades(),
         fetchAttendance(),
         fetchCalendarNotes()
       ]);
-      
-      // Log any failures
-      [studentsResult, gradesResult, attendanceResult, notesResult].forEach((result, index) => {
-        const names = ['students', 'grades', 'attendance', 'notes'];
-        if (result.status === 'rejected') {
-          console.error(`Failed to fetch ${names[index]}:`, result.reason);
-        } else {
-          console.log(`Successfully fetched ${names[index]}`);
-        }
-      });
-      
     } catch (err) {
-      console.error('Error in fetchAllData:', err);
       setError(err instanceof Error ? err.message : 'Failed to fetch data');
     } finally {
-      console.log('All data fetch completed');
       setLoading(false);
     }
   };
@@ -63,7 +45,6 @@ export function useDatabase(quarterId: string | null) {
   const fetchStudents = async () => {
     if (!quarterId) return;
 
-    console.log('Fetching students for quarter:', quarterId);
     const { data: quarterStudentsData, error: qsError } = await supabase
       .from('quarter_students')
       .select(`
@@ -72,12 +53,8 @@ export function useDatabase(quarterId: string | null) {
       `)
       .eq('quarter_id', quarterId);
 
-    if (qsError) {
-      console.error('Students fetch error:', qsError);
-      throw qsError;
-    }
+    if (qsError) throw qsError;
 
-    console.log('Students data received:', quarterStudentsData?.length || 0);
     const studentsData = quarterStudentsData.map(qs => ({
       id: qs.students.id,
       firstName: qs.students.first_name,
@@ -101,18 +78,13 @@ export function useDatabase(quarterId: string | null) {
   const fetchGrades = async () => {
     if (!quarterId) return;
 
-    console.log('Fetching grades for quarter:', quarterId);
     const { data, error } = await supabase
       .from('student_grades')
       .select('*')
       .eq('quarter_id', quarterId);
 
-    if (error) {
-      console.error('Grades fetch error:', error);
-      throw error;
-    }
+    if (error) throw error;
 
-    console.log('Grades data received:', data?.length || 0);
     const formattedGrades = data.map(g => ({
       studentId: g.student_id,
       quarterId: g.quarter_id,
@@ -127,18 +99,13 @@ export function useDatabase(quarterId: string | null) {
   const fetchAttendance = async () => {
     if (!quarterId) return;
 
-    console.log('Fetching attendance for quarter:', quarterId);
     const { data, error } = await supabase
       .from('attendance_records')
       .select('*')
       .eq('quarter_id', quarterId);
 
-    if (error) {
-      console.error('Attendance fetch error:', error);
-      throw error;
-    }
+    if (error) throw error;
 
-    console.log('Attendance data received:', data?.length || 0);
     const formattedAttendance = data.map(a => ({
       studentId: a.student_id,
       quarterId: a.quarter_id,
@@ -153,18 +120,13 @@ export function useDatabase(quarterId: string | null) {
   const fetchCalendarNotes = async () => {
     if (!quarterId) return;
 
-    console.log('Fetching calendar notes for quarter:', quarterId);
     const { data, error } = await supabase
       .from('calendar_notes')
       .select('*')
       .eq('quarter_id', quarterId);
 
-    if (error) {
-      console.error('Calendar notes fetch error:', error);
-      throw error;
-    }
+    if (error) throw error;
 
-    console.log('Calendar notes data received:', data?.length || 0);
     const formattedNotes = data.map(n => ({
       id: n.id,
       quarterId: n.quarter_id,
