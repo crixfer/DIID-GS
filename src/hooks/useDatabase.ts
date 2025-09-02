@@ -27,6 +27,15 @@ export function useDatabase(quarterId: string | null) {
   const fetchAllData = async () => {
     if (!quarterId) return;
     
+    // Check if Supabase is configured
+    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+    const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+    
+    if (!supabaseUrl || !supabaseKey) {
+      setLoading(false);
+      return;
+    }
+    
     try {
       setLoading(true);
       await Promise.all([

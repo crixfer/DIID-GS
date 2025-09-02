@@ -25,6 +25,16 @@ export function useQuarters() {
     
     try {
       setLoading(true);
+      
+      // Check if Supabase is configured
+      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+      const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+      
+      if (!supabaseUrl || !supabaseKey) {
+        setLoading(false);
+        return;
+      }
+      
       const { data, error } = await supabase
         .from('quarters')
         .select('*')

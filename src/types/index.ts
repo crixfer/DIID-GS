@@ -28,6 +28,7 @@ export interface PeriodGrades {
 
 export interface StudentGrades {
   studentId: string;
+  quarterId: string;
   grades: PeriodGrades;
   totalScore: number;
   letterGrade: string;
@@ -35,6 +36,7 @@ export interface StudentGrades {
 
 export interface AttendanceRecord {
   studentId: string;
+  quarterId: string;
   date: string;
   status: 'present' | 'absent' | 'excused' | 'late';
   notes?: string;
@@ -42,11 +44,11 @@ export interface AttendanceRecord {
 
 export interface CalendarNote {
   id: string;
+  quarterId: string;
   date: string;
   title: string;
   description: string;
   type: 'excuse' | 'holiday' | 'reminder';
-  quarterId?: string;
 }
 
 export interface Holiday {
@@ -70,20 +72,3 @@ export interface QuarterStudent {
   studentId: string;
   enrollmentDate: string;
 }
-
-// Update existing interfaces to include quarterId
-export interface StudentGrades {
-  studentId: string;
-  quarterId: string;
-  grades: PeriodGrades;
-  totalScore: number;
-  letterGrade: string;
-}
-
-export interface AttendanceRecord {
-  studentId: string;
-  quarterId: string;
-  date: string;
-  status: 'present' | 'absent' | 'excused' | 'late';
-  notes?: string;
-}</parameter>
